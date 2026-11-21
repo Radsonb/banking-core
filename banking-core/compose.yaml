@@ -1,0 +1,34 @@
+name: banking-core
+
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: banking_core
+      POSTGRES_USER: banking
+      POSTGRES_PASSWORD: banking_local
+    ports:
+      - "127.0.0.1:5436:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U banking -d banking_core"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.8.2
+    command: start-dev
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin_local
+    ports:
+      - "127.0.0.1:8180:8080"
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+
+volumes:
+  postgres_data:
+  keycloak_data:
+    
